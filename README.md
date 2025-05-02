@@ -79,10 +79,6 @@ Model Accuracy Summary
 | XGBoost           | 34%      | 0.20     | 0.29         |
 | Bio_ClinicalBERT  | 39%      | 0.27     | 0.37         |
 
-- Bio_ClinicalBERT generalizes better to negation and history-based statements
-- Random Forest overfits to majority classes
-- Behavioral testing reveals all models struggle with attribution and spelling noise
-
 
 Behavioral Test Results Summary
 
@@ -100,10 +96,37 @@ Behavioral Test Results Summary
 - Behavioral testing highlights critical weaknesses in negation handling across all models, which could misclassify abstinent patients as active drinkers.
 - Bio_ClinicalBERT shows the strongest robustness to multi-sentence attribution and contextual reasoning among the models evaluated.
 
+---
+
+## 🧠 Combined Discussion Section
+
+### 🎯 Model Accuracy Discussion
+
+Our evaluation across three models—Random Forest, XGBoost, and Bio_ClinicalBERT—reveals clear performance disparities:
+
+- **Bio_ClinicalBERT** outperforms the other models across all metrics: accuracy (39%), macro F1 (0.27), and weighted F1 (0.37). Its ability to capture contextual language enables better generalization to nuanced clinical statements.
+- **Random Forest**, while intuitive and easier to train, achieves only 29% accuracy and underperforms on minority classes (reflected in the macro F1 of 0.23), indicating its reliance on majority class heuristics.
+- **XGBoost** marginally surpasses Random Forest in accuracy (34%) and weighted F1 (0.29), but falls behind on macro F1 (0.20), suggesting a high variance in per-class performance.
+- The **low macro F1** values across all models highlight poor handling of underrepresented classes like “Current Some-Day” and “Unknown,” warranting further exploration of class imbalance mitigation techniques.
+
+Together, these metrics indicate that while transformer-based models provide better holistic performance, all models are susceptible to skewed class distributions and require calibration or augmentation for deployment in sensitive clinical decision tasks.
+
+### 🧪 Behavioral Testing Discussion
+
+Behavioral evaluation with CheckList provided deeper insights into model robustness and reasoning limitations:
+
+- **Negation** remains a critical failure point: all models (100%) failed to correctly handle statements like “Patient does not drink alcohol.” This reveals a shared inability to capture syntactic negation cues that invert meaning.
+- **Historical phrases** (e.g., “used to drink but quit”) were correctly handled by all three models (0% failure), likely due to the more formulaic structure and presence of strong temporal indicators.
+- **Attribution** (e.g., differentiating patient vs. relative behavior) exposed major weaknesses:
+  - **XGBoost** failed 100% of attribution cases, confirming its difficulty with multi-sentence reasoning.
+  - **Random Forest** achieved 50% success, better but still inconsistent.
+  - **Bio_ClinicalBERT** performed best with only 16.7% failures, likely due to its pretraining on clinical corpora and ability to track entities across clauses.
+
+These behavioral findings affirm that surface-level accuracy metrics mask critical gaps in semantic understanding, and highlight the importance of CheckList for stress-testing clinical NLP models before real-world deployment.
 
 ---
 
-## 🧠 Extensions & Next Steps
+## 🚀 Extensions & Next Steps
 
 1. **Fine-tune Bio_ClinicalBERT with Class Weights or Focal Loss**  
    Address severe class imbalance for low-frequency alcohol use categories
@@ -119,7 +142,7 @@ Behavioral Test Results Summary
 
 ---
 
-## 🧪 Dependencies
+## 📦 Dependencies
 
 pip install checklist transformers torch scikit-learn pandas medspacy spacy
 
