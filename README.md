@@ -88,14 +88,6 @@ Behavioral Test Results Summary
 | Historical          | 12         | ✅ 0 fails (0%)       | ✅ 0 fails (0%)       | ✅ 0 fails (0%)       |
 | Attribution         | 12         | ⚠️ 6 fails (50%)      | ❌ 12 fails (100%)    | ⚠️ 2 fails (16.7%)    |
 
-- All models fail completely on negation cases, indicating an inability to detect negated alcohol use statements (e.g., “does not drink”).
-- Random Forest passes all historical phrase tests but struggles with attribution (50% fail rate), suggesting poor contextual understanding across sentences.
-- XGBoost fails on both negation and attribution (100% fail rate), reinforcing its sensitivity to shallow linguistic patterns.
-- Bio_ClinicalBERT correctly identifies all historical cases and performs best on attribution (83% pass), but like other models, completely fails negation.
-- The consistent success on historical phrase cases suggests these are more easily learned from context or keywords (e.g., “quit” + time).
-- Behavioral testing highlights critical weaknesses in negation handling across all models, which could misclassify abstinent patients as active drinkers.
-- Bio_ClinicalBERT shows the strongest robustness to multi-sentence attribution and contextual reasoning among the models evaluated.
-
 ---
 
 ## 🧠 Combined Discussion Section
