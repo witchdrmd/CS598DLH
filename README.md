@@ -29,16 +29,6 @@ This project requires access to:
 
 ---
 
-## 📁 File Structure
-
-project-root/
-├── alcohol_use_social_only.csv       # Extracted Social History + labels
-├── untitled6.ipynb                   # Main Colab notebook with all models and evaluations
-├── checklist_tests/                  # Templates for Negation, Attribution, etc.
-└── README.md                         # This file
-
----
-
 ## ⚙️ Steps to Reproduce
 
 ### ✅ Step 1: Preprocessing
@@ -66,7 +56,9 @@ We followed [CheckList (Ribeiro et al., 2020)](https://aclanthology.org/2020.acl
 - **Negation**: e.g., “Patient does not drink alcohol.”
 - **Attribution**: e.g., “Patient drinks. Father does not.”
 - **Historical Phrases**: e.g., “Used to drink but quit 3 years ago.”
-- **Misspellings**: e.g., “Pt d0es n0t dr1nk ETOH.”
+
+**Capabilities not tested**:
+- **Misspellings**: e.g., “Pt d0es n0t dr1nk ETOH.” We were unable to resolve issues within the Checklist library for the results against misspellings.
 
 **Tools used**:
 - `editor.template()` to generate MFT test cases
@@ -78,6 +70,9 @@ We followed [CheckList (Ribeiro et al., 2020)](https://aclanthology.org/2020.acl
 
 ## 📊 Results Summary
 
+
+Model Accuracy Summary
+
 | Model            | Accuracy | Macro F1 | Weighted F1 |
 |------------------|----------|----------|--------------|
 | Random Forest     | 29%      | 0.23     | 0.27         |
@@ -87,6 +82,24 @@ We followed [CheckList (Ribeiro et al., 2020)](https://aclanthology.org/2020.acl
 - Bio_ClinicalBERT generalizes better to negation and history-based statements
 - Random Forest overfits to majority classes
 - Behavioral testing reveals all models struggle with attribution and spelling noise
+
+
+Behavioral Test Results Summary
+
+| Capability          | Test Cases | Random Forest        | XGBoost             | Bio_ClinicalBERT     |
+|---------------------|------------|----------------------|---------------------|----------------------|
+| Negation            | 8          | ❌ 8 fails (100%)     | ❌ 8 fails (100%)     | ❌ 8 fails (100%)     |
+| Historical          | 12         | ✅ 0 fails (0%)       | ✅ 0 fails (0%)       | ✅ 0 fails (0%)       |
+| Attribution         | 12         | ⚠️ 6 fails (50%)      | ❌ 12 fails (100%)    | ⚠️ 2 fails (16.7%)    |
+
+- All models fail completely on negation cases, indicating an inability to detect negated alcohol use statements (e.g., “does not drink”).
+- Random Forest passes all historical phrase tests but struggles with attribution (50% fail rate), suggesting poor contextual understanding across sentences.
+- XGBoost fails on both negation and attribution (100% fail rate), reinforcing its sensitivity to shallow linguistic patterns.
+- Bio_ClinicalBERT correctly identifies all historical cases and performs best on attribution (83% pass), but like other models, completely fails negation.
+- The consistent success on historical phrase cases suggests these are more easily learned from context or keywords (e.g., “quit” + time).
+- Behavioral testing highlights critical weaknesses in negation handling across all models, which could misclassify abstinent patients as active drinkers.
+- Bio_ClinicalBERT shows the strongest robustness to multi-sentence attribution and contextual reasoning among the models evaluated.
+
 
 ---
 
@@ -124,7 +137,8 @@ Versions used:
 
 ## 📚 References
 
-- Ahsan, H., et al. “MIMIC-SBDH: A Dataset for Social and Behavioral Determinants of Health.” arXiv preprint arXiv:2112.05883 (2021).  
-- Ribeiro, M. T., et al. “Beyond Accuracy: Behavioral Testing of NLP Models with CheckList.” ACL (2020).  
-- Alsentzer, E., et al. “Publicly Available Clinical BERT Embeddings.” arXiv:1904.03323 (2019).  
-- Devlin, J., et al. “BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.” NAACL (2019).  
+- Ahsan, H., et al. (2021). MIMIC-SBDH: A Dataset for Social and Behavioral Determinants of Health. Proceedings of the 1st Workshop on Trustworthy NLP, PMLR.
+https://proceedings.mlr.press/v149/ahsan21a/ahsan21a.pdf 
+- Ribeiro, M. T., Wu, T., Guestrin, C., & Singh, S. (2020). Beyond Accuracy: Behavioral Testing of NLP Models with CheckList. Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics (ACL).
+https://aclanthology.org/2020.acl-main.442.pdf
+
